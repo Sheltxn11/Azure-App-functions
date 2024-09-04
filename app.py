@@ -1,96 +1,102 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request, jsonify, render_template
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.formrecognizer import DocumentAnalysisClient
-import os
 
 app = Flask(__name__)
 
 # Azure Form Recognizer credentials
-endpoint = "https://trial3.cognitiveservices.azure.com/"
-key = "df9c781b015546dcadbc3909de3aced2"
-document_analysis_client = DocumentAnalysisClient(
-    endpoint=endpoint, credential=AzureKeyCredential(key)
-)
+azure_endpoint = "https://trial3.cognitiveservices.azure.com/"
+azure_key = "df9c781b015546dcadbc3909de3aced2"
 
-# HTML template
-html_template = '''
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Invoice Processing</title>
-  </head>
-  <body>
-    <h1>Upload Invoice</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <input type="file" name="file" accept="image/*" required>
-      <button type="submit">Upload</button>
-    </form>
-    {% if results %}
-    <h2>Invoice Details:</h2>
-    <ul>
-      {% for result in results %}
-      <li>{{ result }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-  </body>
-</html>
-'''
+# Initialize DocumentAnalysisClient
+document_analysis_client = DocumentAnalysisClient(
+    endpoint=azure_endpoint, credential=AzureKeyCredential(azure_key)
+)
 
 @app.route('/')
 def index():
-    return render_template_string(html_template, results=None)
+    return render_template('index.html')
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
+@app.route('/upload-invoice', methods=['POST'])
+def upload_invoice():
     if 'file' not in request.files:
-        return render_template_string(html_template, results=["No file part"])
+        return jsonify({"error": "No file provided"}), 400
 
     file = request.files['file']
+
     if file.filename == '':
-        return render_template_string(html_template, results=["No selected file"])
+        return jsonify({"error": "No selected file"}), 400
 
-    if file:
-        poller = document_analysis_client.begin_analyze_document("prebuilt-invoice", file)
-        invoices = poller.result()
+    with file.stream as doc_file:
+        poller = document_analysis_client.begin_analyze_document("prebuilt-invoice", doc_file)
+        result = poller.result()
 
-        results = []
-        for idx, invoice in enumerate(invoices.documents):
-            results.append(f"--------Recognizing invoice #{idx + 1}--------")
-            company_name = invoice.fields.get("VendorName")
-            if company_name:
-                results.append(f"Company Name: {company_name.value} has confidence: {company_name.confidence}")
+    invoice = result.documents[0] if result.documents else None
 
-            invoice_number = invoice.fields.get("InvoiceId")
-            if invoice_number:
-                results.append(f"Invoice Number: {invoice_number.value} has confidence: {invoice_number.confidence}")
+    if not invoice:
+        return jsonify({"error": "No invoice found in the document"}), 400
 
-            invoice_date = invoice.fields.get("InvoiceDate")
-            if invoice_date:
-                results.append(f"Invoice Date: {invoice_date.value} has confidence: {invoice_date.confidence}")
+    company_name = invoice.fields.get("VendorName").value if invoice.fields.get("VendorName") else 'N/A'
+    invoice_number = invoice.fields.get("InvoiceId").value if invoice.fields.get("InvoiceId") else 'N/A'
+    invoice_date = invoice.fields.get("InvoiceDate").value if invoice.fields.get("InvoiceDate") else 'N/A'
+    due_date = invoice.fields.get("DueDate").value if invoice.fields.get("DueDate") else 'N/A'
+    subtotal = invoice.fields.get("SubTotal").value if invoice.fields.get("SubTotal") else 'N/A'
+    advance = invoice.fields.get("AdvancePayment").value if invoice.fields.get("AdvancePayment") else 'N/A'
+    discount = invoice.fields.get("Discount").value if invoice.fields.get("Discount") else 'N/A'
+    total_tax = invoice.fields.get("TotalTax").value if invoice.fields.get("TotalTax") else 'N/A'
+    total = invoice.fields.get("InvoiceTotal").value if invoice.fields.get("InvoiceTotal") else 'N/A'
 
-            due_date = invoice.fields.get("DueDate")
-            if due_date:
-                results.append(f"Due Date: {due_date.value} has confidence: {due_date.confidence}")
+    REQUIRED_FIELDS = {
+        "Company_Name": company_name,
+        "invoice_number": invoice_number,
+        "invoice_date": invoice_date,
+        "due_date": due_date,
+        "advance": advance,
+        "discount": discount,
+        "subtotal": subtotal,
+        "tax": total_tax,
+        "total": total
+    }
 
-            subtotal = invoice.fields.get("SubTotal")
-            if subtotal:
-                results.append(f"Subtotal: {subtotal.value} has confidence: {subtotal.confidence}")
+    print("Extracted Fields:", REQUIRED_FIELDS)  # Debug print
 
-            total_tax = invoice.fields.get("TotalTax")
-            if total_tax:
-                results.append(f"Tax: {total_tax.value} has confidence: {total_tax.confidence}")
+    items = invoice.fields.get("Items")
+    ITEMS = []
+    if items and items.value:
+        for item in items.value:
+            item_description = item.value.get("Description").value if item.value.get("Description") else 'N/A'
+            item_quantity = item.value.get("Quantity").value if item.value.get("Quantity") else 'N/A'
+            
+            unit_price_obj = item.value.get("UnitPrice")
+            unit_price = f"{unit_price_obj.value}" if unit_price_obj else 'N/A'
+            
+            discount_obj = item.value.get("Discount")
+            discount = f"{discount_obj.value}" if discount_obj else 'N/A'
+            
+            tax_obj = item.value.get("Tax")
+            tax = f"{tax_obj.value}" if tax_obj else 'N/A'
+            
+            amount_obj = item.value.get("Amount")
+            total = f"{amount_obj.value}" if amount_obj else 'N/A'
 
-            amount_due = invoice.fields.get("AmountDue")
-            if amount_due:
-                results.append(f"Total Amount: {amount_due.value} has confidence: {amount_due.confidence}")
+            ITEMS.append({
+                "description": item_description,
+                "quantity": item_quantity,
+                "unit_price": unit_price,
+                "discount": discount,
+                "tax": tax,
+                "total": total
+            })
 
-            results.append("----------------------------------------")
+    print("Extracted Items:", ITEMS)  # Debug print
 
-        return render_template_string(html_template, results=results)
+    return render_template('result.html', fields=REQUIRED_FIELDS, items=ITEMS)
+
+
+# HTML Page
+@app.route('/')
+def upload_form():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
-
