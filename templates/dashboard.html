@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Liquidmind.AI Invoice Automation - Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        body {
+            background-color: #C9D6FF;
+            background: linear-gradient(to right, #E2E2E2, #C9D6FF);
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #2596BE;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .content h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .content p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        @media screen and (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar a {
+                margin: 10px 0;
+            }
+            .content {
+                padding: 20px 10px;
+            }
+            .content h1 {
+                font-size: 28px;
+            }
+            .content p {
+                font-size: 16px;
+            }
+        }
+        @media screen and (max-width: 480px) {
+            .navbar {
+                padding: 10px;
+            }
+            .navbar a {
+                margin: 5px 0;
+                font-size: 14px;
+            }
+            .content {
+                padding: 10px;
+            }
+            .content h1 {
+                font-size: 24px;
+            }
+            .content p {
+                font-size: 14px;
+            }
+        }
+        /* Download Reports button styling */
+        .download-reports-button {
+            position: fixed;
+            left: 50px; /* Positioned to the left of the WhatsApp icon */
+            bottom: 20px; /* Same vertical alignment as the WhatsApp icon */
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #512DA8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        /* Hover effect for the download button */
+        .download-reports-button:hover {
+            background-color: #673AB7;
+        }
+        /* WhatsApp icon styling */
+        .whatsapp-icon {
+            position: fixed;
+            right: 20px;
+            bottom: 20px; /* Position at the bottom-right corner */
+            font-size: 40px;
+            color: #25D366;
+            cursor: pointer;
+        }
+     /* Informational text styling */
+.info-text {
+    position: fixed;
+    left: 50px;
+    bottom: 80px; /* Adjusted to be above the buttons */
+    font-size: 18px;
+    color: #333;
+    max-width: 1000px;
+    white-space: normal;
+    padding: 10px 20px;
+    text-align: left; /* Ensure text alignment is the same as .content p */
+    line-height: 1.6;
+}
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1 style="margin: 0; font-size: 24px;">Liquidmind.AI Invoice Automation</h1>
+        <div>
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('vendor_register') }}">Vendor</a>
+            <a href="{{ url_for('calendar') }}">Calendar</a>
+            <a href="{{ url_for('get_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('installment') }}">user_installments</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+    <div class="content">
+        <p>You can now access the details of your invoices at a click, and it is as simple as chatting on your WhatsApp. Watch the video to learn how it works.</p>
+    </div>
+    <!-- Informational text -->
+    <p class="info-text">Want to stay updated on vendor payment status? Click on 'Download Reports' to generate an Excel sheet containing information such as invoice number, vendor name, payment date, etc.<br>
+         Start using our product right away by clicking on ‘Start Chatting’.</p>
+     <div class="center-container">
+    <!-- Download Reports Button -->
+    <button id="downloadReportsButton" class="download-reports-button">Download Reports</button>
+    <!-- WhatsApp Icon -->
+    <i class="fab fa-whatsapp whatsapp-icon"></i>
+    </div>
+    <script>
+        !function(){
+            var e,t,n,a;
+            window.MyAliceWebChat||((t=document.createElement("div")).id="myAliceWebChat",
+            (n=document.createElement("script")).type="text/javascript",n.async=!0,
+            n.src="https://widget.myalice.ai/index.js",
+            (a=(e=document.body.getElementsByTagName("script"))[e.length-1]).parentNode.insertBefore(n,a),
+            a.parentNode.insertBefore(t,a),
+            n.addEventListener("load",(function(){
+                MyAliceWebChat.init({
+                    selector:"myAliceWebChat",
+                    number:"917834811114",
+                    message:"",
+                    color:"#25D366",
+                    channel:"wa",
+                    boxShadow:"none",
+                    text:"Start Chatting",
+                    theme:"light",
+                    position:"right",
+                    mb:"20px",
+                    mx:"20px",
+                    radius:"20px"
+                    })
+                }))
+            )}();
+        </script>
+        <script>
+            document.getElementById('downloadReportsButton').addEventListener('click', function() {
+                // Redirect to the download report URL
+                var url = '/download_report';
+                window.location.href = url;
+            });
+        </script>
+            
+</body>
+</html>

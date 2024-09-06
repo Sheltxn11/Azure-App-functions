@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Liquidmind.AI Vendor Registration</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        body {
+            background-color: #C9D6FF;
+            background: linear-gradient(to right, #E2E2E2, #C9D6FF);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+        .navbar {
+            background-color: #2596BE;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            width: 100%;
+            height: 80px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px 0;
+            padding: 20px;
+        }
+        .flash-messages {
+            position: relative;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            width: 300px;
+        }
+        .flash-message {
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+        }
+        .flash-success {
+            background-color: #4CAF50;
+        }
+        .flash-error {
+            background-color: #F44336;
+        }
+        .flash-info {
+            background-color: #2196F3;
+        }
+        .flash-warning {
+            background-color: #FF9800;
+        }
+        .form-container {
+            width: 90%;
+            margin: auto;
+            display: flex;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .form-row {
+            width: 48%;
+            margin: 1%;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .full-width {
+            width: 98%;
+            margin: 1%;
+        }
+        button {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .add-btn {
+            background-color: #28A745;
+        }
+        .add-btn:hover {
+            background-color: #218838;
+        }
+        .remove-btn {
+            background-color: #DC3545;
+        }
+        .remove-btn:hover {
+            background-color: #C82333;
+        }
+        #registerVendorBtn {
+            background-color: #007BFF;
+        }
+        #registerVendorBtn:hover {
+            background-color: #0056B3;
+        }
+        .button-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .button-container .btn-group {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .button-container .btn-group .add-btn {
+            margin-right: auto;
+        }
+        .button-container .btn-group #registerVendorBtn {
+            margin-left: auto;
+            margin-right: 20px; /* Adjust spacing from the Remove button */
+        }
+        .button-container .btn-group .remove-btn {
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <h3>Liquidmind.AI Invoice Automation</h3>
+        <div>
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('vendor_register') }}">Vendor</a>
+            <a href="{{ url_for('calendar') }}">Calendar</a>
+            <a href="{{ url_for('get_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('installment') }}">user_installments</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+    <!-- Flash messages -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div class="container">
+        <form action="{{ url_for('vendor_register') }}" method="POST" autocomplete="off">
+        <h2>Vendor Registration</h2>
+        <form id="vendorForm">
+            <div id="vendorContainer">
+                <div class="vendor-fields">
+                    <div class="form-container">
+                        <div class="form-row">
+                            <label for="vendorName">Vendor Name</label>
+                            <input type="text" class="vendorName" name="vendorName" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="phoneNumber">Phone Number (with country code)</label>
+                            <input type="text" class="phoneNumber" name="phoneNumber" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="vendorEmail">Vendor Email</label>
+                            <input type="email" class="vendorEmail" name="vendorEmail" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="accountantName">Account Name</label>
+                            <input type="text" class="accountantName" name="accountantName" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="accountNumber">Account Number</label>
+                            <input type="text" class="accountNumber" name="accountNumber" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="ifscCode">IFSC Code</label>
+                            <input type="text" class="ifscCode" name="ifscCode" required>
+                        </div>
+                        <div class="form-row full-width">
+                            <label for="vendorIndustryName">Vendor Industry Name (Same in the Invoice)</label>
+                            <input type="text" class="vendorIndustryName" name="vendorIndustryName" required>
+                            <label for="vendor_csv">Upload CSV File(optional):</label>
+                            <p>*upload excel sheet if you have all the vendor details</p>
+                            <input type="file" class="vendor_csv" name="vendor_csv" accept=".csv">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="button-container">
+                <div class="btn-group">
+                    <button type="button" class="add-btn" id="addVendorBtn">+ Add Vendor</button>
+                    <button type="submit" id="registerVendorBtn">Register Vendor</button>
+                    <button type="button" class="remove-btn" id="removeVendorBtn">Remove Vendor</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const addVendorBtn = document.getElementById('addVendorBtn');
+            const removeVendorBtn = document.getElementById('removeVendorBtn');
+            const vendorContainer = document.getElementById('vendorContainer');
+            const vendorForm = document.getElementById('vendorForm');
+            addVendorBtn.addEventListener('click', function () {
+                const vendorFields = document.querySelector('.vendor-fields');
+                const newVendorFields = vendorFields.cloneNode(true);
+                vendorContainer.appendChild(newVendorFields);
+            });
+            removeVendorBtn.addEventListener('click', function () {
+                const vendorFields = document.querySelectorAll('.vendor-fields');
+                if (vendorFields.length > 1) {
+                    vendorFields[vendorFields.length - 1].remove();
+                }
+            });
+            vendorForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                vendorForm.reset();
+                vendorContainer.innerHTML = '';
+                vendorContainer.appendChild(document.querySelector('.vendor-fields').cloneNode(true));
+            });
+        });
+    </script>
+</body>
+</html>

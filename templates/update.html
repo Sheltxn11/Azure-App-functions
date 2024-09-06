@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Update Vendor Details</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #c9d6ff;
+            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
+            width: 768px;
+            max-width: 100%;
+            min-height: 600px;
+            padding: 20px;
+            margin: 20px;
+            margin-top: 60px;
+        }
+
+        .container p {
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0.3px;
+            margin: 20px 0;
+        }
+
+        .container span {
+            font-size: 12px;
+        }
+
+        .container a {
+            color: #333;
+            font-size: 13px;
+            text-decoration: none;
+            margin: 15px 0 10px;
+        }
+
+        .container button {
+            background-color: #512da8;
+            color: #fff;
+            font-size: 12px;
+            padding: 10px 45px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .container form {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 40px 40px;
+            width: 100%;
+        }
+
+        .container input {
+            background-color: #eee;
+            border: none;
+            margin: 8px 0;
+            padding: 10px 15px;
+            font-size: 13px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+            width: 100%;
+        }
+
+        .vendor-update {
+            left: 0;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .navbar {
+            background-color: #512da8;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+        }
+
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <h1 style="margin: 0; font-size: 24px;">Liquidmind.AI Invoice Automation</h1>
+        <div>
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('vendor_register') }}">Vendor</a>
+            <a href="{{ url_for('calendar') }}">Calendar</a>
+            <a href="{{ url_for('get_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('installment') }}">user_installments</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Update Vendor Form -->
+        <div class="form-container vendor-update">
+            <form action="{{ url_for('update_vendor') }}" method="POST" autocomplete="off">
+                <h1>Update Vendor Details</h1>
+                <input type="hidden" name="vendor_id" value="{{ vendor.id }}">
+                <input type="text" name="vendor_name" placeholder="Vendor Name" value="{{ vendor.vendor_name }}" required>
+                <input type="text" name="vendor_phone" placeholder="Phone Number (with country code 91xxx..)" value="{{ vendor.vendor_phone }}" required>
+                <input type="email" name="vendor_email" placeholder="Vendor Email" value="{{ vendor.vendor_email }}" required>
+                <input type="text" name="payment_gateway" placeholder="Payment Gateway" value="{{ vendor.payment_gateway }}" required>
+                <input type="url" name="payment_link" placeholder="Payment Link" value="{{ vendor.payment_link }}" required>
+                <input type="text" name="vendor_industry" placeholder="Vendor Industry Name (Same In The Invoice)" value="{{ vendor.vendor_industry }}" required>
+                <button type="submit">Update Vendor</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

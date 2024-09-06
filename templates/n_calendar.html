@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/n_calendar.css') }}">
+    <title>Dynamic Calendar</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #c9d6ff;
+            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .navbar {
+            background-color: #512da8;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+        }
+
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 60px;
+            padding: 20px;
+        }
+
+        .content {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .box {
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+            padding: 20px;
+            flex: 1;
+            min-width: 300px;
+            overflow: hidden;
+        }
+
+        .container-calendar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #right {
+            width: 100%;
+        }
+
+        .button-container-calendar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .footer-container-calendar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .footer-container-calendar label,
+        .footer-container-calendar select {
+            font-size: 14px;
+        }
+
+        .wrapper {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .table-calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-calendar th,
+        .table-calendar td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .container-installments h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .container-installments table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .container-installments th,
+        .container-installments td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .container-installments th {
+            background-color: #f4f4f4;
+        }
+
+        .container-installments tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .container-installments caption {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .container-installments button {
+            background-color: #512da8;
+            color: #fff;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .container-installments button:hover {
+            background-color: #673ab7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1 style="margin: 0; font-size: 24px;">Liquidmind.AI Invoice Automation</h1>
+        <div>
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('vendor_register') }}">Vendor</a>
+            <a href="{{ url_for('calendar') }}">Calendar</a>
+            <a href="{{ url_for('get_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('installment') }}">user_installments</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="content">
+            <div class="box container-calendar">
+                <div id="right">
+                    <h3 id="monthAndYear"></h3>
+                    <div class="button-container-calendar">
+                        <button id="previous" onclick="previous()">‹</button>
+                        <button id="next" onclick="next()">›</button>
+                    </div>
+                    <table class="table-calendar" id="calendar" data-lang="en">
+                        <thead id="thead-month"></thead>
+                        <tbody id="calendar-body"></tbody>
+                    </table>
+                    <div class="footer-container-calendar">
+                        <label for="month">Jump To:</label>
+                        <select id="month" onchange="jump()">
+                            <option value="0">Jan</option>
+                            <option value="1">Feb</option>
+                            <option value="2">Mar</option>
+                            <option value="3">Apr</option>
+                            <option value="4">May</option>
+                            <option value="5">Jun</option>
+                            <option value="6">Jul</option>
+                            <option value="7">Aug</option>
+                            <option value="8">Sep</option>
+                            <option value="9">Oct</option>
+                            <option value="10">Nov</option>
+                            <option value="11">Dec</option>
+                        </select>
+                        <select id="year" onchange="jump()"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="box container-installments">
+                <h2>Installments</h2>
+                <table id="installments-table">
+                    <caption>Installments of Selected Date</caption>
+                    <thead>
+                        <tr>
+                            <th>Installment ID</th>
+                            <th>Vendor Name</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="installments-body">
+                    {% for row in installments %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[10] }}</td>
+                            <td>{{ row[3] }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/n_calendar.js') }}"></script>
+</body>
+
+</html>

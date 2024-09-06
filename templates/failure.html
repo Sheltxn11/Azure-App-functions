@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Failed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #FF758C, #FF7EB3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .failure-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .failure-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        .failure-message {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+        .failure-icon {
+            font-size: 3rem;
+            color: #FF758C;
+            margin-bottom: 1rem;
+            animation: shake 0.5s infinite;
+        }
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+        .close-button {
+            background: #FF758C;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .close-button:hover {
+            background: #FF7EB3;
+        }
+    </style>
+    <script>
+        function closeWindow() {
+            window.close();
+        }
+    </script>
+</head>
+<body>
+    <div class="failure-container">
+        <div class="failure-icon">✘</div>
+        <h2 class="failure-title">Transaction Failed</h2>
+        <p class="failure-message">Unfortunately, your transaction could not be completed.</p>
+        <button class="close-button" onclick="closeWindow()">Close Window</button>
+    </div>
+</body>
+</html>

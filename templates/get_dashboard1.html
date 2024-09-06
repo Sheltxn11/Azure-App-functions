@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Outflow Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .Cash_Outflow {
+            padding: 8px;
+            background-color: #4cae4c;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            border-radius: 10px;
+            font-size: x-large;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+        }
+
+        .left {
+            width: 40%;
+            padding: 2%;
+            margin: 0% 3%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            align-items: center;
+        }
+
+        .right {
+            width: 40%;
+            margin: 0% 5%;
+        }
+
+        .header {
+            border-top: 2px solid grey;
+            padding-top: 20px;
+        }
+
+        .header,
+        .toggle-buttons {
+            display: flex;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header {
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .toggle-buttons button {
+            padding: 10px 20px;
+            margin-right: 0px;
+            color: white;
+            border: 1px solid #5cb85c;
+            cursor: pointer;
+        }
+
+        .toggle-buttons button:hover {
+            cursor: pointer;
+        }
+
+        .date-dropdowns select {
+            padding: 10px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .kpis {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .kpi {
+            width: 35%;
+            margin: 15px;
+            padding: 20px;
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        .kpi h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .i_icon {
+            width: 15px;
+            height: 15px;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        .kpi p {
+            margin: 10px 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .kpi small {
+            color: #3c763d;
+        }
+
+        .additional-info {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .info-box {
+            width: 40%;
+            padding: 20px;
+            margin: 10px;
+            background-color: #d9edf7;
+            text-align: center;
+            border: 1px solid #bce8f1;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .info-box h4 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .info-box p {
+            margin: 10px 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .payments-due {
+            width: 100%;
+            border-collapse: collapse;
+            position: relative;
+        }
+
+        .payments-due h2 {
+            text-align: center;
+            background-color: #4cae4c;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            position: relative;
+        }
+
+        .payments-due th,
+        .payments-due td {
+            width: 50%;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .payments-due th {
+            background-color: #f2f2f2;
+        }
+
+        #invoicesDueToday {
+            width: 35%;
+        }
+
+        #amountDueToday {
+            width: 35%;
+        }
+
+        #totalVendors {
+            width: 83%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #averagePayDays {
+            width: 83%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left">
+            <div class="Cash_Outflow">Cash Outflow</div>
+            <div class="header">
+                <div class="toggle-buttons">
+                    <button id="amountBtn">Amount</button>
+                    <button id="invoicesBtn">Number of Invoices</button>
+                </div>
+            </div>
+            <div class="kpis">
+                <div class="kpi" id="totalInvoices">
+                    <h3>Total Invoices <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon1" class="i_icon"></h3>
+                    <p>₹{{ total_invoices_amount }}</p>
+                </div>
+                <div class="kpi" id="totalPaid">
+                    <h3>Total Paid <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon2" class="i_icon"></h3>
+                    <p>₹{{ total_amount_paid }}</p>
+                </div>
+                <div class="kpi" id="due">
+                    <h3>Due <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon3" class="i_icon"></h3>
+                    <p>₹ 1</p>
+                </div>
+                <div class="kpi" id="overDue">
+                    <h3>Over Due <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon4" class="i_icon"></h3>
+                    <p>₹0</p>
+                </div>
+            </div>
+            <div class="toggle-buttons">
+                <button id="totalBtn">Total</button>
+                <button id="averageBtn">Average</button>
+            </div>
+            <div class="kpis">
+                <div class="kpi" id="discount">
+                    <h3>Discount <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon5" class="i_icon"></h3>
+                    <p>₹0</p>
+                </div>
+                <div class="kpi" id="lateFeesPaid">
+                    <h3>Late Fees Paid <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon6" class="i_icon"></h3>
+                    <p>₹0</p>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <div class="additional-info">
+                <div class="info-box" id="invoicesDueToday">
+                    <h4>Invoices Due Today <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon7" class="i_icon"></h4>
+                    <p>{{ invoices_due_today_count }}</p>
+                </div>
+                <div class="info-box" id="amountDueToday">
+                    <h4>Amount Due Today <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon8" class="i_icon"></h4>
+                    <p>₹{{ amount_due_today }}</p>
+                </div>
+                <div class="info-box" id="totalVendors">
+                    <img src="{{ url_for('static', filename='vendors_logo.png') }}" style="width: 25px; height: 25px; margin-right: 15px;">
+                    <p>Total Vendors: {{ total_vendors }}</p>
+                    <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon9" class="i_icon">
+                </div>
+                <div class="info-box" id="averagePayDays">
+                    <h4>You take <i>0 Days</i> on average to pay invoices</h4>
+                    <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon10" class="i_icon">
+                </div>
+            </div>
+            <div class="payments-due">
+                <h2>Next 7 Payments Due</h2>
+                <img src="{{ url_for('static', filename='i_icon.png') }}" id="i_icon11" class="i_icon">
+                <div id="table-container"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const amountBtn = document.getElementById("amountBtn");
+            const invoicesBtn = document.getElementById("invoicesBtn");
+            const totalBtn = document.getElementById("totalBtn");
+            const averageBtn = document.getElementById("averageBtn");
+
+            const kpiData = {
+                totalInvoices: `{{total_invoices_amount}}`,
+                totalPaid: `{{total_amount_paid}}`,
+                due: 0,
+                overDue: 0,
+                discount: 0,
+                lateFeesPaid: 0
+            };
+
+            function updateKPIs() {
+                const isAmount = amountBtn.classList.contains("active");
+                const isTotal = totalBtn.classList.contains("active");
+
+                if (isAmount) {
+                    document.getElementById("totalInvoices").querySelector("p").textContent = kpiData.totalInvoices;
+                    document.getElementById("totalPaid").querySelector("p").textContent = kpiData.totalPaid;
+                    document.getElementById("due").querySelector("p").textContent = kpiData.due;
+                    document.getElementById("overDue").querySelector("p").textContent = kpiData.overDue;
+                    amountBtn.style.backgroundColor = '#5cb85c';
+                    invoicesBtn.style.backgroundColor = 'white';
+                    amountBtn.style.color = 'white';
+                    invoicesBtn.style.color = '#5cb85c';
+                } else {
+                    document.getElementById("totalInvoices").querySelector("p").textContent = `{{number_of_invoices}}`; 
+                    document.getElementById("totalPaid").querySelector("p").textContent = `{{number_of_invoices_paid}}`; 
+                    document.getElementById("due").querySelector("p").textContent = `{{number_of_invoices_due}}`; 
+                    document.getElementById("overDue").querySelector("p").textContent = `{{number_of_invoices_overdue}}`;
+                    amountBtn.style.backgroundColor = 'white';
+                    invoicesBtn.style.backgroundColor = '#5cb85c';
+                    amountBtn.style.color = '#5cb85c';
+                    invoicesBtn.style.color = 'white';
+                }
+
+                if (isTotal) {
+                    document.getElementById("discount").querySelector("p").textContent = "₹" + kpiData.discount;
+                    document.getElementById("lateFeesPaid").querySelector("p").textContent = "₹" + kpiData.lateFeesPaid;
+                    totalBtn.style.backgroundColor = '#5cb85c';
+                    averageBtn.style.backgroundColor = 'white';
+                    totalBtn.style.color = 'white';
+                    averageBtn.style.color = '#5cb85c';
+                } else {
+                    document.getElementById("discount").querySelector("p").textContent = "₹" + kpiData.discount / 10; 
+                    document.getElementById("lateFeesPaid").querySelector("p").textContent = "₹" + kpiData.lateFeesPaid / 10; 
+                    averageBtn.style.backgroundColor = '#5cb85c';
+                    totalBtn.style.backgroundColor = 'white';
+                    averageBtn.style.color = 'white';
+                    totalBtn.style.color = '#5cb85c';
+                }
+            }
+
+            function setActiveButton(button) {
+                button.parentElement.querySelectorAll("button").forEach(btn => btn.classList.remove("active"));
+                button.classList.add("active");
+            }
+
+            [amountBtn, invoicesBtn, totalBtn, averageBtn].forEach(button => {
+                button.addEventListener("click", (e) => {
+                    setActiveButton(e.target);
+                    updateKPIs();
+                });
+            });
+
+            amountBtn.classList.add("active");
+            totalBtn.classList.add("active");
+            updateKPIs();
+
+            function createTable(next_7_days_due_payments) {
+            const table = document.createElement("table");
+
+            // Create table header
+            const headerRow = document.createElement("tr");
+            ["Vendor", "Due Date", "Amount Due"].forEach(headerText => {
+                const th = document.createElement("th");
+                th.textContent = headerText;
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Populate table rows with next_7_days_due_payments data
+            next_7_days_due_payments.forEach(payment => {
+                const row = document.createElement("tr");
+
+                // Assuming payment format is [vendor_name, selected_date, amount_due]
+                const vendorName = payment[0];
+                const selectedDate = new Date(payment[1]);
+                const amountDue = payment[2];
+
+                const tdVendor = document.createElement("td");
+                tdVendor.textContent = vendorName;
+                row.appendChild(tdVendor);
+
+                const tdDate = document.createElement("td");
+                // Format selectedDate using toLocaleDateString() for a readable format
+                tdDate.textContent = selectedDate.toLocaleDateString();
+                row.appendChild(tdDate);
+
+                const tdAmount = document.createElement("td");
+                tdAmount.textContent = "₹" + amountDue.toLocaleString(); // Format amount as needed
+                row.appendChild(tdAmount);
+
+                table.appendChild(row);
+            });
+
+            // Clear existing content and append the new table
+            const tableContainer = document.getElementById("table-container");
+            tableContainer.innerHTML = "";
+            tableContainer.appendChild(table);
+        }
+
+        // Extracting the Flask variable for next_7_days_due_payments
+        const next7DaysDuePayments = JSON.parse(`{{ next_7_days_due_payments|tojson | safe }}`);
+
+        // Call the function to create and populate the table
+        createTable(next7DaysDuePayments);
+
+        });
+
+        function addTooltip(iconId, message) {
+            var icon = document.getElementById(iconId);
+            icon.addEventListener('mouseenter', function() {
+                var tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.innerText = message;
+                tooltip.style.position = 'absolute';
+                tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                tooltip.style.color = 'white';
+                tooltip.style.padding = '5px';
+                tooltip.style.marginLeft = '25px';
+                tooltip.style.width = '100px';
+                tooltip.style.wordWrap = "break-word";
+                tooltip.style.borderRadius = '3px';
+                tooltip.style.top = icon.getBoundingClientRect().top + window.scrollY - 30 + 'px';
+                tooltip.style.left = icon.getBoundingClientRect().left + window.scrollX + 'px';
+                document.body.appendChild(tooltip);
+                icon.addEventListener('mouseleave', function() {
+                    document.body.removeChild(tooltip);
+                });
+            });
+        }
+
+        addTooltip('i_icon1', 'Total payment received this month');
+        addTooltip('i_icon2', 'Total payment expected to receive next month');
+        addTooltip('i_icon3', 'Payment status details');
+        addTooltip('i_icon4', 'Breakdown of payments by vendor');
+        addTooltip('i_icon5', 'Ageing analysis of due payments');
+        addTooltip('i_icon6', 'Late fees paid analysis');
+        addTooltip('i_icon7', 'Invoices due today');
+        addTooltip('i_icon8', 'Amount due today');
+        addTooltip('i_icon9', 'Total number of vendors');
+        addTooltip('i_icon10', 'Average payment days');
+        addTooltip('i_icon11', 'Next 7 payments due');
+    </script>
+</body>
+</html>

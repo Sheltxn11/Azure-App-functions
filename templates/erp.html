@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Liquidmind.AI Invoice Automation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        body {
+            background-color: #C9D6FF;
+            background: linear-gradient(to right, #E2E2E2, #C9D6FF);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+            width: 768px;
+            max-width: 100%;
+            min-height: 600px;
+            padding: 40px;
+        }
+        .container form {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .container input,
+        select {
+            background-color: #eee;
+            border: none;
+            margin: 8px 0;
+            padding: 10px 15px;
+            font-size: 13px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+        }
+        select {
+            cursor: pointer;
+        }
+        .container button {
+            background-color: #2596BE;
+            color: #fff;
+            font-size: 12px;
+            padding: 10px 45px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form action="{{ url_for('erp') }}" method="POST" autocomplete="off">
+            <h1>ERP DETAILS</h1>
+            <select name="erp" required>
+                <option value="" disabled selected>Select ERP</option>
+                <option value="Tally">Tally</option>
+                <option value="Zoho CRM">Zoho CRM</option>
+            </select>
+            <input type="text" name="erp_id" placeholder="ERP ID" required>
+            <input type="text" name="industry" placeholder="Industry" required>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+</body>
+</html>

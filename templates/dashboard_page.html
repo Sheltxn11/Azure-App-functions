@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Outflow Dashboard</title>
+    <style>
+        
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+
+    body {
+        padding: 70px;
+        font-family: Arial, sans-serif;
+    }
+
+    .title {
+        color: #5C6AC4;
+    }
+
+    #chartContainer,
+    #vendorChartsContainer {
+        display: none;
+        /* Initially hide the charts */
+        margin-top: 20px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #5C6AC4;
+        border: 2px solid transparent;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+        box-sizing: border-box; /* Ensures padding and border are included in width/height */
+    }
+
+    button:hover {
+        background-color: #4B55B2;
+    }
+
+    /* Prevent button size changes on focus and active states */
+    button:focus,
+    button:active {
+        background-color: #4B55B2;
+        outline: none;
+        border-color: transparent;
+        box-shadow: none;
+        transform: none; /* Ensure no scaling or visual changes */
+        /* Explicitly set the size to prevent any changes */
+        width: auto;
+        height: auto;
+    }
+
+    .chart-label {
+        text-align: center;
+        font-size: 18px;
+        margin-top: 10px;
+        color: #333;
+    }
+
+    .chart-wrapper {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #E0E0E0;
+    }
+
+    .chart-container {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .chart-container .chart-wrapper {
+        flex: 1;
+        position: relative;
+        margin-right: 20px;
+        min-width: 300px;
+    }
+
+    .clearfix {
+        clear: both;
+    }
+
+    .navbar {
+        background-color: #2596be;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 5px;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+    }
+
+    .navbar a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .navbar a:hover {
+        text-decoration: underline;
+    }
+
+    .Cash_Outflow {
+        padding: 8px;
+        background-color: #4cae4c;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 700;
+        border-radius: 10px;
+        font-size: x-large;
+        color: white;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+        background-color: #fff;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 60px;
+    }
+
+    .left,
+    .right {
+        width: 100%;
+        padding: 2%;
+        margin-bottom: 20px;
+    }
+
+    .header {
+        border-top: 2px solid grey;
+        padding-top: 20px;
+    }
+
+    .header,
+    .toggle-buttons {
+        display: flex;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+
+    .header {
+        justify-content: space-between;
+        text-align: center;
+    }
+
+    .toggle-buttons button {
+        padding: 10px 20px;
+        color: white;
+        border: 1px solid #5cb85c;
+        cursor: pointer;
+        flex: 1;
+        margin: 5px;
+    }
+
+    .toggle-buttons button:hover {
+        cursor: pointer;
+    }
+
+    .date-dropdowns select {
+        padding: 10px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    .kpis {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        align-items: center;
+    }
+
+    .kpi {
+        width: 100%;
+        margin-bottom: 15px;
+        padding: 20px;
+        background-color: #dff0d8;
+        border: 1px solid #d6e9c6;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 10px;
+        text-align: center;
+        position: relative;
+    }
+
+    .kpi h3 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .i_icon {
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+    }
+
+    .kpi p {
+        margin: 10px 0;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .kpi small {
+        color: #3c763d;
+    }
+
+    .additional-info {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        justify-content: center;
+    }
+
+    .info-box {
+        width: 100%;
+        padding: 20px;
+        margin-bottom: 10px;
+        background-color: #d9edf7;
+        text-align: center;
+        border: 1px solid #bce8f1;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 10px;
+        position: relative;
+    }
+
+    .info-box h4 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .info-box p {
+        margin: 10px 0;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .payments-due {
+        width: 100%;
+        border-collapse: collapse;
+        position: relative;
+    }
+
+    .payments-due h2 {
+        text-align: center;
+        background-color: #4cae4c;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+        position: relative;
+    }
+
+    .payments-due th,
+    .payments-due td {
+        width: 50%;
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .payments-due th {
+        background-color: #f2f2f2;
+    }
+
+    #invoicesDueToday {
+        width: 100%;
+    }
+
+    #amountDueToday {
+        width: 100%;
+    }
+
+    #totalVendors,
+    #averagePayDays {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    #table-container {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    /* Media Queries for Mobile */
+    @media screen and (max-width: 768px) {
+
+        body {
+            padding: 20px;
+        }
+
+        .navbar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .navbar h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .navbar a {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .container {
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .left,
+        .right {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .kpi {
+            width: 100%;
+        }
+
+        .info-box,
+        .payments-due {
+            width: 100%;
+        }
+
+        .chart-container {
+            flex-direction: column;
+        }
+
+        .chart-wrapper {
+            margin-right: 0;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+       
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <h3 style="margin: 0; font-size: 24px;">Liquidmind.AI Invoice Automation</h3>
+        <div>
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('vendor_register') }}">Vendor</a>
+            <a href="{{ url_for('calendar') }}">Calendar</a>
+            <a href="{{ url_for('get_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('installment') }}">user_installments</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+    <!-- Container -->
+    <div class="container">
+        <!-- New Buttons Section -->
+        <div class="toggle-buttons">
+            <button id="dueOverdueBtn">Due/Overdue</button>
+            <button id="vendorBtn">Vendors</button>
+        </div>
+
+        <!-- Chart Container -->
+        <div id="chartContainer">
+            <div class="chart-container">
+                <!-- Doughnut Chart Wrapper -->
+                <div class="chart-wrapper">
+                    <canvas id="doughnutChart"></canvas>
+                    <div class="chart-label">Total Payment Status - Invoices</div>
+                </div>
+                <!-- Bar with Line Chart Wrapper -->
+                <div class="chart-wrapper">
+                    <canvas id="barLineChart"></canvas>
+                    <div class="chart-label">Payable Ageing</div>
+                </div>
+            </div>
+            <!-- Upcoming Cash Outflows Bar Chart Wrapper -->
+            <div class="chart-wrapper" style="width: 100%; margin-top: 40px;">
+                <canvas id="upcomingCashOutflowsChart"></canvas>
+                <div class="chart-label">Upcoming Cash Outflows</div>
+            </div>
+        </div>
+
+        <!-- Vendor Charts Section -->
+        <div id="vendorChartsContainer">
+            <div class="row">
+                <!-- Horizontal Bar Graph -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div id="bar-chart"></div>
+                </div>
+                <!-- Pie Chart -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div id="pie-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="left">
+        <h1 class="Cash_Outflow">Cash Outflow Dashboard</h1>
+        <div class="toggle-buttons">
+            <button id="amountBtn" class="active">Amount</button>
+            <button id="invoicesBtn">Invoices</button>
+            <button id="totalBtn" class="active">Total</button>
+            <button id="averageBtn">Average</button>
+        </div>
+        <div class="kpis">
+            <div class="kpi">
+                <h3>Total Invoices</h3>
+                <img class="i_icon" src="information-icon.png" alt="Info">
+                <p id="totalInvoices">100</p>
+                <small>Value in Amount</small>
+            </div>
+            <div class="kpi">
+                <h3>Total Paid</h3>
+                <img class="i_icon" src="information-icon.png" alt="Info">
+                <p id="totalPaid">80</p>
+                <small>Value in Amount</small>
+            </div>
+            <div class="kpi">
+                <h3>Due</h3>
+                <img class="i_icon" src="information-icon.png" alt="Info">
+                <p id="due">20</p>
+                <small>Value in Amount</small>
+            </div>
+            <div class="kpi">
+                <h3>Overdue</h3>
+                <img class="i_icon" src="information-icon.png" alt="Info">
+                <p id="overdue">5</p>
+                <small>Value in Amount</small>
+            </div>
+            <div class="kpi">
+                <h3>Discounts</h3>
+                <img class="i_icon" src="information-icon.png" alt="Info">
+                <p id="discounts">15%</p>
+                <small>Value in Percentage</small>
+            </div>
+            <div class="kpi">
+                <h3>Late Fees</h3>
+                <img class="i_icon" src="information-icon.png" alt="Info">
+                <p id="lateFees">2%</p>
+                <small>Value in Percentage</small>
+            </div>
+        </div>
+        <div class="additional-info">
+            <div class="info-box">
+                <h4>Invoices Due Today</h4>
+                <p id="invoicesDueToday">10</p>
+            </div>
+            <div class="info-box">
+                <h4>Amount Due Today</h4>
+                <p id="amountDueToday">$5,000</p>
+            </div>
+            <div class="info-box">
+                <h4>Total Vendors</h4>
+                <p id="totalVendors">50</p>
+            </div>
+            <div class="info-box">
+                <h4>Average Payment Days</h4>
+                <p id="averagePayDays">30</p>
+            </div>
+        </div>
+    </div>
+    <div class="right">
+        <h2 class="title">Payments Due</h2>
+        <div id="table-container">
+            <table class="payments-due">
+                <thead>
+                    <tr>
+                        <th>Vendor</th>
+                        <th>Amount Due</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vendor 1</td>
+                        <td>$1,000</td>
+                    </tr>
+                    <tr>
+                        <td>Vendor 2</td>
+                        <td>$2,000</td>
+                    </tr>
+                    <tr>
+                        <td>Vendor 3</td>
+                        <td>$1,500</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        // Toggle visibility of due/overdue charts
+        document.getElementById('dueOverdueBtn').addEventListener('click', function () {
+            document.getElementById('chartContainer').style.display = 'block';
+            document.getElementById('vendorChartsContainer').style.display = 'none';
+        });
+
+        // Toggle visibility of vendor charts
+        document.getElementById('vendorBtn').addEventListener('click', function () {
+            document.getElementById('vendorChartsContainer').style.display = 'block';
+            document.getElementById('chartContainer').style.display = 'none';
+            renderCharts();
+        });
+
+        // Doughnut Chart
+        const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+        const doughnutChart = new Chart(doughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Over due', 'Paid', 'Due'],
+                datasets: [{
+                    data: [22, 60, 45],
+                    backgroundColor: ['#F7464A', '#46BFBD', '#FDB45C'],
+                    hoverBackgroundColor: ['#FF5A5E', '#5AD3D1', '#FFC870']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                },
+                cutout: '70%',
+                plugins: {
+                    doughnutlabel: {
+                        labels: [
+                            {
+                                text: '17.3%',
+                                font: {
+                                    size: '20'
+                                },
+                                color: '#000',
+                            },
+                            {
+                                text: 'Over due',
+                                font: {
+                                    size: '16'
+                                },
+                                color: '#666'
+                            }
+                        ]
+                    }
+                }
+            }
+        });
+
+        // Bar with Line Chart
+        const barLineCtx = document.getElementById('barLineChart').getContext('2d');
+        const barLineChart = new Chart(barLineCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-30 days', '31-60 days', '61-90 days', 'older'],
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Over Due Amount',
+                        data: [150000, 120000, 60000, 30000],
+                        backgroundColor: '#FF6384',
+                    },
+                    {
+                        type: 'line',
+                        label: 'Avg late fees %',
+                        data: [3, 4, 6, 8],
+                        borderColor: '#36A2EB',
+                        backgroundColor: '#36A2EB',
+                        fill: false,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        position: 'left',
+                        ticks: {
+                            callback: function (value) { return value + 'k'; }
+                        }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        ticks: {
+                            callback: function (value) { return value + '%'; }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Upcoming Cash Outflows Bar Chart
+        const upcomingCashOutflowsCtx = document.getElementById('upcomingCashOutflowsChart').getContext('2d');
+        const upcomingCashOutflowsChart = new Chart(upcomingCashOutflowsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jul 1st - 15th', 'Jul 16th - 31st', 'Aug 1st - 15th', 'Aug 16th - 31st'],
+                datasets: [{
+                    label: 'Due',
+                    data: [230000, 100000, 130000, 124000],
+                    backgroundColor: '#4BC0C0',
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) { return value + 'K'; }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Function to render the vendor charts
+        function renderCharts() {
+            // Data for Bar Chart
+            var barData = [
+                {
+                    y: ['Vendor 1', 'Vendor 2', 'Vendor 3', 'Vendor 4', 'Vendor 5', 'Vendor 6', 'Vendor 7'],
+                    x: [300, 250, 130, 220, 190, 170, 80],
+                    name: 'Paid',
+                    type: 'bar',
+                    orientation: 'h',
+                    marker: { color: '#5DA271' } // Green color for Paid
+                },
+                {
+                    y: ['Vendor 1', 'Vendor 2', 'Vendor 3', 'Vendor 4', 'Vendor 5', 'Vendor 6', 'Vendor 7'],
+                    x: [150, 100, 120, 90, 60, 70, 40],
+                    name: 'Due',
+                    type: 'bar',
+                    orientation: 'h',
+                    marker: { color: '#B0DBD9' } // Light Blue color for Due
+                },
+                {
+                    y: ['Vendor 1', 'Vendor 2', 'Vendor 3', 'Vendor 4', 'Vendor 5', 'Vendor 6', 'Vendor 7'],
+                    x: [20, 50, 85, 45, 30, 10, 50],
+                    name: 'Overdue',
+                    type: 'bar',
+                    orientation: 'h',
+                    marker: { color: '#DC736B' } // Red color for Overdue
+                }
+            ];
+            var barLayout = {
+                barmode: 'stack',
+                title: 'Vendors - Payment Status',
+                xaxis: { title: 'Amount' },
+                yaxis: { title: 'Vendors' },
+                height: 400,
+                margin: { l: 20, r: 20, t: 30, b: 20 }
+            };
+            // Create Bar Chart without Modebar
+            Plotly.newPlot('bar-chart', barData, barLayout, { displayModeBar: false });
+
+            // Data for Pie Chart
+            var pieData = [{
+                values: [200, 180, 160, 140, 120, 100],
+                labels: ['Vendor 1', 'Vendor 2', 'Vendor 3', 'Vendor 4', 'Vendor 5', 'Others'],
+                type: 'pie',
+                marker: {
+                    colors: ['#6699CC', '#66B2B2', '#66CC99', '#99CC99', '#B2CC66', '#CCCC99'] // Shades of blue and green
+                },
+                textinfo: 'label+percent',
+                insidetextorientation: 'radial'
+            }];
+            var pieLayout = {
+                title: 'Percentage of Invoice Amount by Vendor',
+                height: 400,
+                margin: { l: 20, r: 20, t: 30, b: 20 }
+            };
+            // Create Pie Chart without Modebar
+            Plotly.newPlot('pie-chart', pieData, pieLayout, { displayModeBar: false });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installment Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .installment {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .installment input {
+            width: 48%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="installmentForm">
+            <label for="installments">How many installments do you want to pay? Total Amount : {{final_amount}}</label>
+            <input type="number" id="installments" name="installments" min="1" step="1" required>
+            <button type="button" id="submitInstallments">Submit</button>
+        </form>
+        
+        <form id="paymentForm" style="display: none;">
+            <div id="installmentTemplates"></div>
+            <input type="hidden" name="token" value="{{token}}">
+            <button type="submit">Submit Payments</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('submitInstallments').addEventListener('click', function() {
+            const installments = parseInt(document.getElementById('installments').value);
+            if (installments > 0) {
+                generateInstallmentFields(installments);
+                document.getElementById('paymentForm').style.display = 'block';
+            }
+        });
+
+        function generateInstallmentFields(installments) {
+            const container = document.getElementById('installmentTemplates');
+            container.innerHTML = ''; 
+
+            for (let i = 0; i < installments; i++) {
+                const div = document.createElement('div');
+                div.className = 'installment';
+
+                const amountInput = document.createElement('input');
+                amountInput.type = 'number';
+                amountInput.name = `amount${i}`;
+                amountInput.placeholder = 'Amount';
+                amountInput.step = '0.01';
+                amountInput.required = true;
+
+                const dateInput = document.createElement('input');
+                dateInput.type = 'date';
+                dateInput.name = `date${i}`;
+                dateInput.required = true;
+
+                div.appendChild(amountInput);
+                div.appendChild(dateInput);
+
+                container.appendChild(div);
+            }
+        }
+
+        document.getElementById('paymentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const amounts = Array.from(document.querySelectorAll('input[name^="amount"]'));
+            const dates = Array.from(document.querySelectorAll('input[type="date"]'));
+
+            const totalAmount = amounts.reduce((sum, input) => sum + parseFloat(input.value), 0).toFixed(2);
+            const isValidDates = dates.every(input => new Date(input.value) > new Date());
+
+            const finalAmount = `{{final_amount}}`;
+            if (parseFloat(totalAmount) !== parseFloat(finalAmount)) {
+                alert('The total amount is incorrect.');
+            } else if (!isValidDates) {
+                alert('Some dates are invalid.');
+            } else {
+                const form = document.getElementById('paymentForm');
+                const formData = new FormData(form);
+
+                fetch('/submit_installment', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.close();
+                    } else {
+                        alert('Failed to submit data.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting the form.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Invoice</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #ffecd2, #fcb69f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        .container h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            border-bottom: 2px solid #fcb69f;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus {
+            border-color: #fcb69f;
+            box-shadow: 0 0 8px rgba(252, 182, 159, 0.4);
+            outline: none;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .buttons button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .buttons .submit-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .buttons .submit-btn:hover {
+            background-color: #218838;
+        }
+        .buttons .edit-btn {
+            background-color: #ffc107;
+            color: white;
+        }
+        .buttons .edit-btn:hover {
+            background-color: #e0a800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Edit Invoice</h2>
+        <form id="invoiceForm">
+            <div class="form-group">
+                <label for="invoiceNumber">Company Name:</label>
+                <input type="text" id="companyName" name="companyName" value="{{data['Company_Name']}}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="invoiceNumber">Invoice Number:</label>
+                <input type="text" id="invoiceNumber" name="invoiceNumber" value="{{data['invoice_number']}}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="subTotal">Sub Total:</label>
+                <input type="text" id="subTotal" name="subTotal" value="{{data['subtotal']}}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="tax">Tax:</label>
+                <input type="text" id="tax" name="tax" value="{{data['tax']}}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="total">Total:</label>
+                <input type="text" id="total" name="total" value="{{data['total']}}" disabled>
+                <input type="hidden" id="token" name="token" value="{{ token }}">
+            </div>
+            <div class="buttons">
+                <button type="button" class="edit-btn" onclick="enableEditing()">Edit</button>
+                <button type="button" class="submit-btn" onclick="submitForm()">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function enableEditing() {
+            document.getElementById('companyName').disabled = false;
+            document.getElementById('invoiceNumber').disabled = false;
+            document.getElementById('subTotal').disabled = false;
+            document.getElementById('tax').disabled = false;
+            document.getElementById('total').disabled = false;
+        }
+
+        function submitForm() {
+            const form = document.getElementById('invoiceForm');
+            const disabledFields = form.querySelectorAll('input:disabled');
+
+            // Temporarily enable disabled fields
+            disabledFields.forEach(field => field.disabled = false);
+
+            const formData = new FormData(form);
+
+            // Re-disable the fields after collecting the data
+            disabledFields.forEach(field => field.disabled = true);
+
+            fetch('/confirmed_data', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.close();
+                } else {
+                    alert('Failed to submit data.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the form.');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -3,14 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Invoice</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Liquidmind.AI Invoice Automation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        body {
+            background-color: #c9d6ff;
+            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px #2596BE;
+            position: relative;
+            overflow: hidden;
+            width: 768px;
+            max-width: 100%;
+            min-height: 600px;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .flash-messages {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            width: 300px;
+        }
+        .flash-message {
+            display: none;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+        }
+        .flash-success {
+            background-color: #4CAF50;
+        }
+        .flash-error {
+            background-color: #f44336;
+        }
+        .flash-info {
+            background-color: #2196F3;
+        }
+        .flash-warning {
+            background-color: #ff9800;
+        }
+        .container form {
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 40px 40px;
+            width: 100%;
+        }
+        .container input,
+        select {
+            background-color: #eee;
+            border: none;
+            margin: 8px 0;
+            padding: 10px 15px;
+            font-size: 13px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            text-align: center;
+        }
+        select {
+            cursor: pointer;
+        }
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .password-wrapper i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #bbb;
+        }
+        .container button {
+            background-color: #6237c5;
+            color: #fff;
+            font-size: 12px;
+            padding: 10px 45px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .container button.hidden {
+            background-color: transparent;
+            border-color: #fff;
+        }
+        .container p {
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0.3px;
+            margin: 20px 0;
+        }
+        .container span {
+            font-size: 12px;
+        }
+        .container a {
+            color: #333;
+            font-size: 13px;
+            text-decoration: none;
+            margin: 15px 0 10px;
+            display: inline-block;
+        }
+        .toggle-button {
+            background-color: #6237c5;
+            color: #fff;
+            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 40px;
+            background-color: #4285F4;
+            border-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .google-btn:hover {
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+        .google-icon-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.597);
+            border-radius: 2px;
+            width: 40px;
+            height: 100%;
+            margin-right: 10px;
+        }
+        .google-icon {
+            width: 18px;
+            height: 18px;
+        }
+        .btn-text {
+            font-size: 14px;
+            color: #ffffff;
+            margin: 0;
+            text-align: center;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 20px;
+                width: 95%;
+            }
+            .container form {
+                padding: 20px 20px;
+            }
+        }
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 15px;
+                width: 100%;
+                min-height: auto;
+            }
+            .container form {
+                padding: 20px;
+            }
+            .flash-messages {
+                width: 90%;
+                left: 5%;
+            }
+            .password-wrapper i {
+                right: 15px;
+            }
+            .btn-text {
+                font-size: 12px;
+            }
+            .google-btn {
+                height: 36px;
+            }
+            .google-icon-wrapper {
+                width: 36px;
+            }
+            .google-icon {
+                width: 16px;
+                height: 16px;
+            }
+            .container button {
+                padding: 10px 30px;
+            }
+        }
+        @media (max-width: 400px) {
+            .container button {
+                padding: 8px 20px;
+                font-size: 10px;
+            }
+            .google-btn {
+                margin: 15px 0;
+            }
+            .btn-text {
+                font-size: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>Upload Invoice</h2>
-    <form action="/upload-invoice" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*">
-        <br><br>
-        <button type="submit">Upload and Process</button>
-    </form>
+    <div class="container">
+        <div class="flash-messages">
+            <!-- Flash messages will be dynamically added here -->
+        </div>
+        <div class="form-container sign-in">
+            <form action="{{ url_for('login') }}" method="POST" autocomplete="off">
+                <h2>Sign In</h2>
+                <input type="email" name="email" placeholder="Email" required>
+                <div class="password-wrapper">
+                    <input type="password" name="password" id="signinPassword" placeholder="Password" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('signinPassword')"></i>
+                </div>
+                <button type="submit">Sign In</button>
+                <a href="#">Forgot your password?</a>
+                <a href="{{ url_for('google_login') }}" class="google-btn">
+                    <div class="google-icon-wrapper">
+                        <img class="google-icon" src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-1024.png"
+                            alt="Google Logo">
+                    </div>
+                    <p class="btn-text">Sign in with Google</p>
+                </a>
+                <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
+            </form>
+        </div>
+        <div class="form-container sign-up" style="display: none;">
+            <form action="{{ url_for('register') }}" method="POST" autocomplete="off">
+                <h2>Sign Up</h2>
+                <input type="text" name="first_name" placeholder="First Name">
+                <input type="text" name="last_name" placeholder="Last Name">
+                <input type="text" name="phone_number" placeholder="Phone Number" maxlength="10" pattern="[6789][0-9]{9}" title="Please enter valid mobile number">
+                <input type="email" name="email" placeholder="Email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address">
+                <div class="password-wrapper">
+                    <input type="password" name="password" id="signupPassword" placeholder="Password">
+                    <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('signupPassword')"></i>
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" name="confirm_password" id="confirmPassword" placeholder="Confirm Password">
+                    <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('confirmPassword')"></i>
+                </div>
+                <button type="submit">Sign Up</button>
+                <a href="{{ url_for('google_login') }}" class="google-btn">
+                    <div class="google-icon-wrapper">
+                        <img class="google-icon" src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-1024.png"
+                            alt="Google Logo">
+                    </div>
+                    <p class="btn-text">Sign up with Google</p>
+                </a>
+                <p>Already have an account? <a href="#" onclick="showSignIn()">Sign In</a></p>
+            </form>
+        </div>
+       
+    <script>
+        function showSignUp() {
+            document.querySelector('.sign-in').style.display = 'none';
+            document.querySelector('.sign-up').style.display = 'block';
+        }
+        function showSignIn() {
+            document.querySelector('.sign-up').style.display = 'none';
+            document.querySelector('.sign-in').style.display = 'block';
+        }
+      
+        function togglePasswordVisibility(id) {
+            const passwordField = document.getElementById(id);
+            const icon = passwordField.nextElementSibling;
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        // Flash message functionality
+        function showFlashMessage(type, message) {
+            const flashMessage = document.createElement('div');
+            flashMessage.className = `flash-message flash-${type}`;
+            flashMessage.textContent = message;
+            const flashMessagesContainer = document.querySelector('.flash-messages');
+            flashMessagesContainer.appendChild(flashMessage);
+            // Display the message and remove after 2 seconds
+            setTimeout(() => {
+                flashMessage.style.display = 'block';
+                setTimeout(() => {
+                    flashMessage.remove();
+                }, 2000);
+            }, 100);
+        }
+    </script>
 </body>
 </html>

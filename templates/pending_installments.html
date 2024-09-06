@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Liquidmind.AI Invoice Automation - Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background-color: #c9d6ff;
+            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar {
+            background-color: #512da8;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        
+        .navbar a {
+            color: #fff;
+            text-decoration: none; 
+            margin: 0 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar a:hover {
+            text-decoration: underline; 
+        }
+        
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .content h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .content p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
+        .table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #512da8;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        tr:hover {
+            background-color: #e1e1e1;
+        }
+
+        @media screen and (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .navbar a {
+                margin: 10px 0;
+            }
+            
+            .content {
+                padding: 20px 10px;
+            }
+            
+            .content h1 {
+                font-size: 28px;
+            }
+            
+            .content p {
+                font-size: 16px;
+            }
+
+            table {
+                font-size: 16px;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .navbar {
+                padding: 10px;
+            }
+            
+            .navbar a {
+                margin: 5px 0;
+                font-size: 14px;
+            }
+            
+            .content {
+                padding: 10px;
+            }
+            
+            .content h1 {
+                font-size: 24px;
+            }
+            
+            .content p {
+                font-size: 14px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h1 style="margin: 0; font-size: 24px;">Liquidmind.AI Invoice Automation</h1>
+        <div>
+            <a href="{{ url_for('dashboard') }}">Home</a>
+            <a href="{{ url_for('vendor_register') }}">Vendor</a>
+            <a href="{{ url_for('calendar') }}">Calendar</a>
+            <a href="{{ url_for('get_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('installment') }}">user_installments</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>Pending Installments</h1>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Installment ID</th>
+                        <th>Vendor Name</th>
+                        <th>Vendor Industry</th>
+                        <th>Invoice Number</th>
+                        <th>Selected Date</th>
+                        <th>Due Date</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        <td>{{ row.installment_id }}</td>
+                        <td>{{ row.vendor_name }}</td>
+                        <td>{{ row.vendor_industry }}</td>
+                        <td>{{ row.invoice_number }}</td>
+                        <td>{{ row.selected_date }}</td>
+                        <td>{{ row.due_date }}</td>
+                        <td>{{ row.amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+
+</html>
