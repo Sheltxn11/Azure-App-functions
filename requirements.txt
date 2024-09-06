@@ -1,2 +1,7 @@
-flask
+Flask
+bcrypt
+requests
+requests-oauthlib
+azure-ai-formrecognizer
+azure-core
 psycopg2
