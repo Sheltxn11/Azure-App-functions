@@ -1,3 +1,2 @@
 flask
-azure-ai-formrecognizer
-azure-core
+psycopg2
